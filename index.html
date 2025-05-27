@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        *{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    
+}
+
+body{
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(to right, #6e71c8, #d847b6);
+    color: #333;
+    line-height: 1.6;
+}
+
+.app{
+    background: #fff;
+    width: 90%;
+    max-width: 600px;
+    margin: 100px auto 0;
+    padding: 30px;
+    border-radius: 8px;
+}
+
+.app h1{
+    font-weight: 25px;
+    font-size: 2.5rem;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 30px;
+    text-align: center;
+    color: #1bb77b;
+}
+
+.quiz{
+    padding: 20px;
+}
+
+.quiz h2{
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #4b29e1;
+}
+.btn{
+    background: #fff;
+    color: #222;
+    font-weight: 500;
+    width: 100%;
+    border: 1px solid #222;
+    padding: 10px;
+    margin: 10px 0;
+    text-align: left;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 1s;
+
+}
+
+.btn:hover:not([disabled]){
+    background: #303131;
+    color: #fff;
+
+}
+.btn:disabled{
+    cursor: not-allowed;
+}
+#next-button{
+    background: #2f5ba2;
+    color: #fff;
+    font-weight: 500;
+    border: none;
+    width: 150px;
+    margin: 20px auto 0;
+    padding: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: none;
+}
+.correct{
+    background: #1bb77b;
+    color: #fff;
+}
+.wrong{
+    background: #e11b1b;
+    color: #fff;
+}
+    </style>
+</head>
+<body>
+
+
+
+    <div class="app">
+        <h1>Simple Quiz</h1>
+        <div class="quiz">
+            <h2 id="question">Question Goes Here</h2>
+            <div id="answer-buttons">
+                <button class="btn" id="btn1">Answer 1</button>
+                <button class="btn" id="btn2">Answer 2</button>
+                <button class="btn" id="btn3">Answer 3</button>
+                <button class="btn" id="btn4">Answer 4</button>
+            </div>
+            <button id="next-button">NEXT</button>
+        </div>
+     </div>
+
+    <script>
+       const questions = [
+    {
+        questions: "What is the capital of France?",
+        answers: [
+            { text: "Berlin", correct: false },
+            { text: "Madrid", correct: false },
+            { text: "Paris", correct: true },
+            { text: "Rome", correct: false }
+        ]
+    }
+    ,
+    {
+        questions: "What is the largest planet in our solar system?",
+        answers: [
+            { text: "Earth", correct: false },
+            { text: "Jupiter", correct: true },
+            { text: "Saturn", correct: false },
+            { text: "Mars", correct: false }
+        ]
+    },
+    {
+        questions: "Who wrote 'To Kill a Mockingbird'?",
+        answers: [
+            { text: "Harper Lee", correct: true },
+            { text: "Mark Twain", correct: false },
+            { text: "Ernest Hemingway", correct: false },
+            { text: "F. Scott Fitzgerald", correct: false }
+        ]
+    },
+   {
+     questions: "What is the largest mammal in the world?",
+        answers: [
+            { text: "Elephant", correct: false },
+            { text: "Blue Whale", correct: true },
+            { text: "Giraffe", correct: false },
+            { text: "Great White Shark", correct: false }
+        ]
+   },
+   {
+        questions: "What is the chemical symbol for gold?",
+        answers: [
+            { text: "Au", correct: true },
+            { text: "Ag", correct: false },
+            { text: "Pb", correct: false },
+            { text: "Fe", correct: false }
+        ]
+    },
+    {
+        questions: "Which planet is known as the Red Planet?",
+        answers: [
+            { text: "Venus", correct: false },
+            { text: "Mars", correct: true },
+            { text: "Jupiter", correct: false },
+            { text: "Saturn", correct: false }
+        ]
+   }
+       
+        
+    
+];
+
+const questionElement = document.getElementById('question');
+const answerButton = document.getElementById('answer-buttons');
+const nextButton = document.getElementById('next-button');
+
+let currentQuestionIndex = 0;
+let score = 0;
+function startQuiz(){
+    currentQuestionIndex = 0;
+    score = 0;
+    nextButton.innerHTML = "Next";
+    showQuestion();
+}
+
+function showQuestion() {
+    resetState();
+    let currentQuestion = questions[currentQuestionIndex];
+    let questionNo = currentQuestionIndex + 1;
+    questionElement.innerHTML = questionNo + ". " + currentQuestion.questions;
+
+    currentQuestion.answers.forEach(answer => {
+        const button = document.createElement('button');
+        button.innerHTML = answer.text;
+        button.classList.add('btn');
+        answerButton.appendChild(button);
+        if (answer.correct) {
+            button.dataset.correct = answer.correct;
+        }
+        button.addEventListener('click', selectAnswer );
+    
+    });
+}
+function resetState() {
+    nextButton.style.display = 'none';
+    while (answerButton.firstChild) {
+        answerButton.removeChild(answerButton.firstChild);
+    }
+}
+
+function selectAnswer(e) {
+    const selectedButton = e.target;
+    const isCorrect = selectedButton.dataset.correct === 'true';
+    if (isCorrect) {
+        selectedButton.classList.add('correct');
+        score++;
+    } else {
+        selectedButton.classList.add('wrong');
+    }
+    Array.from(answerButton.children).forEach(button => {
+        if (button.dataset.correct === 'true') {
+            button.classList.add('correct');
+        } button.disabled = true;
+    });
+    nextButton.style.display = 'block';
+}
+
+function showScore() {
+    resetState();
+    questionElement.innerHTML = `You scored ${score} out of ${questions.length}!`;
+    nextButton.innerHTML = 'Restart The Quiz';
+    nextButton.style.display = 'block';
+}
+
+function handleNextButton(){
+    currentQuestionIndex++;
+    if (currentQuestionIndex < questions.length) {
+        showQuestion();
+    } else {
+        showScore();
+    }
+}
+nextButton.addEventListener('click', () => {
+    if (currentQuestionIndex < questions.length) {
+        handleNextButton();
+    }
+    else {
+        startQuiz();
+    }
+})
+startQuiz();
+    </script>
+</body>
+</html>
